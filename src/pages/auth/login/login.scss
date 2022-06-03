@@ -1,0 +1,50 @@
+.wrapper {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+
+  .loginPage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 16px;
+    gap: 32px;
+
+    width: 512px;
+    height: 500px;
+
+    background: #ffffff;
+    box-shadow: -1px -1px 4px rgba(33, 43, 54, 0.1),
+      2px 2px 4px rgba(33, 43, 54, 0.2);
+    border-radius: 8px;
+  }
+}
+
+.login-title {
+  //   border: 2px solid red;
+  width: 100%;
+  font-family: "Public Sans";
+  font-size: 24px;
+  line-height: 36px;
+  color: #212b36;
+  font-weight: bold;
+  text-align: center;
+}
+
+.login-btn {
+  width: 480px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.forgot-pass {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
+.sign-up {
+  font-weight: 700;
+  font-size: 24px;
+}
