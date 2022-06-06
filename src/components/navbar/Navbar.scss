@@ -1,64 +1,35 @@
-.navbar {
+.navbar-items {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;
-
-  position: absolute;
-  width: 1440px;
+  width: 70%;
+  margin-left: 15%;
+  margin-top: 10px;
   height: 60px;
-  left: 0px;
-  top: 0px;
-
-  background: #ffffff;
-  box-shadow: 0px 1px 1px rgba(33, 43, 54, 0.25);
+  justify-content: space-between;
+  position: relative;
 }
 
 .logo {
+  // border: 2px solid green;
   width: 22.58px;
   height: 22px;
   background: url(icon.png);
-  //   flex: none;
-  //   order: 0;
-  //   flex-grow: 0;
-}
-.titleBar {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0px 16px;
-  //   gap: 576px;
-  border: 2px solid green;
-  width: 1008px;
-  height: 60px;
-
-  flex: none;
-  order: 0;
-  flex-grow: 0;
 }
 
 .logoText {
-  width: 101px;
-  height: 22px;
-
-  font-family: "Montserrat";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 22px;
-
+  margin-left: "500px";
   color: #000000;
 }
 
 .icon {
-  //   border: 2px solid red;
-  //   position: absolute;
-  //   left: 8.33%;
-  //   right: 8.33%;
-  //   top: 14.58%;
-  //   bottom: 14.58%;
+  margin-left: auto;
+  margin: 15px;
   color: #000000;
+}
+.user {
+  margin-top: "1px";
+}
+
+.user-actions {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.4);
 }
