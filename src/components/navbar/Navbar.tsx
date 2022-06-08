@@ -14,7 +14,10 @@ import HomeIcon from "@mui/icons-material/Home";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
+import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 export type NavbarProps = {
   /**
    * To be triggered on logout click
@@ -87,13 +90,23 @@ export const Navbar = ({ onLogout }: NavbarProps) => {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={() => setOpenEdit(!openEdit)}>Edit Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Change Password</MenuItem>
+        <MenuItem onClick={() => setOpenEdit(!openEdit)}>
+          <ManageAccountsOutlinedIcon className="model-icons" />
+          Edit Profile
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <LockResetOutlinedIcon className="model-icons" />
+          Change Password
+        </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+
+        <MenuItem onClick={handleClose}>
+          <LogoutOutlinedIcon className="model-icons" />
+          Logout
+        </MenuItem>
       </Menu>
       {openEdit ? (
-        <EditProfile open={openEdit} handleClose={handleEditClose} />
+        <EditProfile open={openEdit} handleClose={handleEditClose} handleNavClose={handleClose}/>
       ) : (
         ""
       )}

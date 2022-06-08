@@ -1,10 +1,11 @@
 import { BehaviorSubject } from "rxjs";
-import { get, post, put } from "./http/httpMethods";
+import { get, patch, post, put } from "./http/httpMethods";
 import Cookie from "js-cookie";
 import history from "../routes/history";
 import { paths } from "../routes/routes.config";
 import { showErrorToast } from "./toastUtil";
 import { defaultUsers } from "../@types/user";
+import { baseURL } from "./constants/urls";
 
 let currentUserFromStorage: any;
 
@@ -56,6 +57,7 @@ export const authenticationService = {
   signUpRoute,
   signInRoute,
   resetPasswordRoute,
+  editProfile,
   currentUser: currentUserSubject.asObservable(),
   get currentUserValue() {
     return currentUserSubject.value;
@@ -226,6 +228,14 @@ function register(payload: any) {
   );
 }
 
+/* edit user Profile*/
+function editProfile(payload: any) {
+  return patch("http://localhost:8080/users", payload).then((response: any) => {
+    // handleLogin(response)
+    localStorage.setItem("currentUser", JSON.stringify(response));
+    return response;
+  });
+}
 /*
  * Set new password
  */
@@ -267,10 +277,11 @@ function isUserAndTokenAvailable() {
  * Fetch current user
  */
 function loadCurrentUser() {
-  get(`/api/auth/self`).then((response: any) => {
+  get(`http://localhost:8080/auth/self`).then((response: any) => {
+    console.log(response);
     localStorage.setItem("currentUser", JSON.stringify(response));
     currentUserSubject.next(response);
-    currentOrganizationSubject.next(response._org[0]);
+    //currentOrganizationSubject.next(response._org[0]);
   });
 }
 
@@ -282,7 +293,7 @@ function handleLogin(response: any) {
   Cookie.set("_token", response.token, { path: "/" });
 
   localStorage.setItem("currentUser", JSON.stringify(response.user));
-
+  localStorage.setItem("token", JSON.stringify(response.token));
   currentUserSubject.next(response.user);
 
   //currentOrganizationSubject.next(response.user._org[0]);

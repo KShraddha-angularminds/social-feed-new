@@ -1,5 +1,6 @@
 import React from "react";
 import "./home.scss";
+import "./logo.svg";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -11,6 +12,10 @@ export default function Login() {
         <Typography variant="h4" component="h1" gutterBottom>
           Home
         </Typography>
+        <img
+          style={{ height: "100px", width: "100px" }}
+          src="http://localhost:8080/1654663320223-roadtrip.jpg"
+        />
       </Box>
     </Container>
   );

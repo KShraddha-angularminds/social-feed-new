@@ -1,5 +1,40 @@
 .edit-profile {
-  border: 2px solid blue;
-  height: 80%;
-  width: 50%;
+  // border: 2px solid green;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  // gap: 24px;
+  isolation: isolate;
+  position: relative;
+  background: #ffffff;
+  box-shadow: -1px -1px 4px rgba(33, 43, 54, 0.1),
+    2px 2px 4px rgba(33, 43, 54, 0.2);
+  border-radius: 8px;
+}
+.edit-items {
+  margin-top: 24px;
+}
+.photo-icon {
+  padding: 6px;
+  border-radius: 65px;
+  border-style: solid;
+  background-color: #fafafa;
+  border-color: rgb(176, 179, 179);
+  border: 1px solid #dce0e4;
+  position: absolute;
+  color: #1890ff;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: 240px;
+  top: 160px;
+}
+.model-icons {
+  color: grey;
+  margin-right: 10px;
+}
+.title {
+  font-family: "Public Sans";
 }
