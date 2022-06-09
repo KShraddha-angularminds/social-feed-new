@@ -8,7 +8,7 @@ import EditProfile from "../../pages/EditProfile/EditProfile";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Logout } from "@mui/icons-material";
-import { Avatar, Button, Divider } from "@mui/material";
+import { Avatar, Button, Divider, Snackbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import HomeIcon from "@mui/icons-material/Home";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -18,6 +18,19 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { baseURL } from "../../utils/constants/urls";
+import MuiAlert from "@mui/material/Alert";
+import { AlertProps } from "@mui/material";
+import ChangePassword from "../../pages/auth/ChangePassword/ChangePassword";
+import { authenticationService } from "../../utils/auth.service";
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export type NavbarProps = {
   /**
    * To be triggered on logout click
@@ -30,6 +43,12 @@ export const Navbar = ({ onLogout }: NavbarProps) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openChangePass, setOpenChangePass] = useState(false);
+  const [open1, setOpen1] = React.useState(false);
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("currentUser")!)
+  );
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
@@ -39,6 +58,19 @@ export const Navbar = ({ onLogout }: NavbarProps) => {
   const handleEditClose = () => {
     setOpenEdit(false);
   };
+  const handlePasswordClose = () => {
+    setOpenChangePass(false);
+  };
+  const handleCloseToastSuccess = (event: any, reason: any) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen1(false);
+  };
+  // const onLogout = () => {
+  //   return <Logout />;
+  //   // authenticationService.logout();
+  // };
   return (
     <AppBar
       position="static"
@@ -73,10 +105,14 @@ export const Navbar = ({ onLogout }: NavbarProps) => {
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
+            src={`${baseURL}/${user.image}`}
             onClick={handleClick}
           />
           <Typography className="icon user" style={{ marginTop: "15px" }}>
-            User
+            {/* {`${user.firstname} ${user.lastname}`} */}
+            {user.username
+              ? user.username
+              : user.firstname + " " + user.lastname}
           </Typography>
         </div>
       </Box>
@@ -94,22 +130,54 @@ export const Navbar = ({ onLogout }: NavbarProps) => {
           <ManageAccountsOutlinedIcon className="model-icons" />
           Edit Profile
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => setOpenChangePass(!openChangePass)}>
           <LockResetOutlinedIcon className="model-icons" />
           Change Password
         </MenuItem>
         <Divider />
 
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={onLogout}>
           <LogoutOutlinedIcon className="model-icons" />
           Logout
         </MenuItem>
       </Menu>
       {openEdit ? (
-        <EditProfile open={openEdit} handleClose={handleEditClose} handleNavClose={handleClose}/>
+        <EditProfile
+          open={openEdit}
+          setUser={setUser}
+          handleClose={handleEditClose}
+          handleNavClose={handleClose}
+          setOpen1={setOpen1}
+        />
       ) : (
         ""
       )}
+      {openChangePass ? (
+        <ChangePassword
+          open={openChangePass}
+          setUser={setUser}
+          handleClose={handlePasswordClose}
+          handleNavClose={handleClose}
+          setOpen1={setOpen1}
+        />
+      ) : (
+        ""
+      )}
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={open1}
+        autoHideDuration={3000}
+        onClose={handleCloseToastSuccess}
+      >
+        <Alert
+          onClose={handleCloseToastSuccess}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Profile Updated Succesfully!
+        </Alert>
+      </Snackbar>
     </AppBar>
   );
 };

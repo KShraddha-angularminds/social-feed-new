@@ -3,7 +3,7 @@ import { get, patch, post, put } from "./http/httpMethods";
 import Cookie from "js-cookie";
 import history from "../routes/history";
 import { paths } from "../routes/routes.config";
-import { showErrorToast } from "./toastUtil";
+import { showErrorToast, showSuccessToast } from "./toastUtil";
 import { defaultUsers } from "../@types/user";
 import { baseURL } from "./constants/urls";
 
@@ -58,6 +58,8 @@ export const authenticationService = {
   signInRoute,
   resetPasswordRoute,
   editProfile,
+  removeProfileImage,
+
   currentUser: currentUserSubject.asObservable(),
   get currentUserValue() {
     return currentUserSubject.value;
@@ -76,7 +78,7 @@ function verifyCredentials(payload: any) {
   //   handleLogin({ token: "AABBCC", user: defaultUsers[0] });
   //   resolve(true);
   // });
-  return post("http://localhost:8080/auth/login", payload)
+  return post(`${baseURL}/auth/login`, payload)
     .then((response: any) => {
       handleLogin(response);
       // handleLogin({ token: "AABBCC", user: defaultUsers[0] });
@@ -96,7 +98,7 @@ function googleLogin(payload: any) {
   //   handleLogin({ token: "AABBCC", user: defaultUsers[0] });
   //   resolve(true);
   // });
-  return post("http://localhost:8080/auth/google-login", payload)
+  return post(`${baseURL}/google-login`, payload)
     .then((response: any) => {
       handleLogin(response);
       // handleLogin({ token: "AABBCC", user: defaultUsers[0] });
@@ -127,7 +129,7 @@ function signUpRoute() {
 }
 
 function forgetPassword(payload: any) {
-  return post("http://localhost:8080/auth/forgot-password", payload).then(
+  return post(`${baseURL}/auth/forgot-password`, payload).then(
     (response: any) => {
       return response;
     }
@@ -140,12 +142,11 @@ function signInRoute() {
 }
 
 function resetPassword(payload: any, token: any) {
-  return post(
-    `http://localhost:8080/auth/reset-password?token=${token}`,
-    payload
-  ).then((response: any) => {
-    return response;
-  });
+  return post(`${baseURL}/auth/reset-password?token=${token}`, payload).then(
+    (response: any) => {
+      return response;
+    }
+  );
 }
 
 /*
@@ -169,6 +170,7 @@ function unsubscribeAll() {
  * Logout method
  */
 function logout() {
+  console.log("in logout");
   return get(`/api/auth/logout`)
     .then((response) => {
       // remove user from local storage to log user out
@@ -178,7 +180,7 @@ function logout() {
 
       currentUserSubject.next({});
 
-      history.push("/auth/login");
+      history.push(paths.login);
       // window.location.reload()
       return response;
     })
@@ -190,7 +192,7 @@ function logout() {
 
       currentUserSubject.next({});
 
-      history.push("/auth/login");
+      history.push(paths.login);
     });
 }
 
@@ -220,17 +222,24 @@ function authToken() {
  * Register user method
  */
 function register(payload: any) {
-  return post("http://localhost:8080/auth/register", payload).then(
-    (response: any) => {
-      // handleLogin(response)
-      return response;
-    }
-  );
+  return post(`${baseURL}/auth/register`, payload).then((response: any) => {
+    // handleLogin(response)
+    return response;
+  });
 }
 
 /* edit user Profile*/
 function editProfile(payload: any) {
-  return patch("http://localhost:8080/users", payload).then((response: any) => {
+  return patch(`${baseURL}/users`, payload).then((response: any) => {
+    // handleLogin(response)
+    localStorage.setItem("currentUser", JSON.stringify(response));
+    return response;
+  });
+}
+
+/*Remove profile image*/
+function removeProfileImage() {
+  return patch(`${baseURL}/users/remove-profile`).then((response: any) => {
     // handleLogin(response)
     localStorage.setItem("currentUser", JSON.stringify(response));
     return response;
@@ -239,14 +248,29 @@ function editProfile(payload: any) {
 /*
  * Set new password
  */
-function setPassword(payload: any, token: string) {
-  return put("/api/user/password", payload, {
-    headers: { Authorization: `${token}` },
-  }).then((response: any) => {
-    return response;
-  });
+// function setPassword(payload: any, token: string) {
+//   return put("/api/user/password", payload, {
+//     headers: { Authorization: `${token}` },
+//   }).then((response: any) => {
+//     return response;
+//   });
+// }
+function setPassword(payload: any, token: string, confirmPassword: string) {
+  if (confirmPassword && confirmPassword !== payload.new_password) {
+    showErrorToast("Confirm password does not match with new password");
+  } else {
+    return patch(`${baseURL}/auth/change-password`, payload, {
+      headers: { Authorization: `${token}` },
+    })
+      .then((response: any) => {
+        showSuccessToast(response);
+        return response;
+      })
+      .catch((error) => {
+        showErrorToast(error.message);
+      });
+  }
 }
-
 /*
  * Verify OTP
  */

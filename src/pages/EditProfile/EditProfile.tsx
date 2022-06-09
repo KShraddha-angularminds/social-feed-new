@@ -25,47 +25,65 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Divider } from "@mui/material";
+import { Divider, Snackbar } from "@mui/material";
 import { baseURL } from "../../utils/constants/urls";
 import axios from "axios";
 import { authenticationService } from "../../utils/auth.service";
+import MuiAlert from "@mui/material/Alert";
+import { AlertProps } from "@mui/material";
 
-function EditProfile({ open, handleClose, handleNavClose }: any) {
-  const imagePath = "../../../nodejs-starter/src/assets/profileImage";
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
+function EditProfile({
+  open,
+  handleClose,
+  handleNavClose,
+  setUser,
+  setOpen1,
+}: any) {
   const { handleSubmit, register } = useForm();
   const [value, setValue] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
   const [editForm, setEditForm] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null
+    JSON.parse(localStorage.getItem("currentUser")!)
   );
-  const [picture, setPicture] = useState("");
+  const [errorMessage, setErrorMessage] = useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [image, setImage] = useState(`${editForm.image}`);
+  const [picture, setPicture] = useState(`${baseURL}/${editForm.image}`);
   const [mobile, setMobile] = useState(editForm.mobile || "");
+
   const doEditProfile = (formD: any) => {
-    console.log(formD.image[0]);
     const formData = new FormData();
-    formData.append("image", formD.image[0]);
+    formData.append("image", image || "");
     formData.append("username", formD.username);
     formData.append("bio", formD.bio);
     formData.append("DOB", formD.DOB);
-    formData.append("mobile", formD.mobile);
+    formData.append("mobile", mobile);
     formData.append("email", formD.email);
     formData.append("gender", formD.gender);
-    //console.log(picture, "picture");
+
     console.log(formData.get("image"));
 
-    // console.log(formData);
-    // formData.mobile = mobile;
-    //setButtonDisabled(true);
     authenticationService
       .editProfile(formData)
       .then((response: any) => {
+        setUser(response);
+        setOpen1(true);
         handleClose();
         handleNavClose();
       })
       .catch((error) => {
         //setButtonDisabled(false);
+        console.log(error.message);
+        setErrorMessage(error.message);
+        setOpen2(true);
       });
   };
   const descriptionElementRef = React.useRef(null);
@@ -78,8 +96,12 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
     }
   }, [openProfile]);
 
-  const handlePhone = () => {
-    console.log("phone");
+  const handleCloseToast = (event: any, reason: any) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    // setOpen1(false);
+    setOpen2(false);
   };
 
   const [openEdit, setOpenEdit] = useState(false);
@@ -94,8 +116,29 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
     authenticationService.loadCurrentUser();
   }, []);
 
-  console.log(editForm);
-  console.log(picture.name);
+  const handlePicture = (e: any) => {
+    setImage(e.target.files[0]);
+    if (e.target.files.length > 0) {
+      const file = URL.createObjectURL(e.target.files[0]);
+      console.log(file);
+      setPicture(file);
+      handleCloseProfile();
+    }
+  };
+  const handleRemoveProfile = () => {
+    authenticationService
+      .removeProfileImage()
+      .then((response: any) => {
+        console.log(response);
+        setPicture("");
+        handleCloseProfile();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  console.log(image);
+  console.log(errorMessage);
   return (
     <div>
       <Dialog
@@ -131,7 +174,7 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
           <Avatar
             style={{ height: "100px", width: "100px" }}
             onClick={handleClick}
-            src={`${baseURL}/${editForm.image}`}
+            src={picture}
           />
 
           <AddAPhotoIcon className="photo-icon" />
@@ -230,6 +273,7 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
                 <MuiPhoneNumber
                   defaultCountry={"in"}
                   type="tel"
+                  variant="outlined"
                   value={editForm.mobile}
                   onChange={(value) => setMobile(value)}
                   // value={value}
@@ -276,17 +320,17 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
             // className="edit-update-photo"
             className="edir-add-photo-box"
             id="contained-button-file"
-            multiple
-            {...register("image")}
+            // multiple
+            // {...register("image")}
             type="file"
-            onChange={(e) => setPicture(e.target.files[0])}
+            onChange={(e) => handlePicture(e)}
           />{" "}
           <label htmlFor="contained-button-file">
             <AddAPhotoOutlinedIcon className="model-icons" />
             Update photo
           </label>
         </MenuItem>
-        <MenuItem onClick={handleCloseProfile}>
+        <MenuItem onClick={handleRemoveProfile}>
           <DeleteOutlineOutlinedIcon className="model-icons" />
           Remove Photo
         </MenuItem>
@@ -296,6 +340,21 @@ function EditProfile({ open, handleClose, handleNavClose }: any) {
           Cancel
         </MenuItem>
       </Menu>
+
+      {/* <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={open2}
+        autoHideDuration={3000}
+        onClose={handleCloseToast}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar> */}
     </div>
   );
 }

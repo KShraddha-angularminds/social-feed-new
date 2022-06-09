@@ -9,14 +9,10 @@ export default function Login() {
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        {/* <Typography variant="h4" component="h1" gutterBottom>
           Home
-        </Typography>
-        <img
-          style={{ height: "100px", width: "100px" }}
-          src="http://localhost:8080/1654663320223-roadtrip.jpg"
-        />
-      </Box>
+        </Typography> */}
+        </Box>
     </Container>
   );
 }
